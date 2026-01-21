@@ -1,0 +1,24 @@
+# Rust
+/target
+/backend/target
+**/*.rs.bk
+
+# Go
+/collector/bin
+/collector/dist
+*.exe
+*.test
+*.out
+
+# Environment
+.env
+.env*.local
+
+# IDEs
+.vscode
+.idea
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
