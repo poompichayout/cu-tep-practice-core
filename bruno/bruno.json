@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "CU-TEP Core API",
+  "type": "collection",
+  "ignore": [
+    ".git",
+    "node_modules"
+  ]
+}

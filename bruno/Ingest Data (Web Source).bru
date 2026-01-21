@@ -1,0 +1,19 @@
+meta {
+  name: Ingest Data (Web Source)
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8080/internal/ingest
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "url": "https://example.com/practice-test-1",
+    "raw_content": "This is a sample reading passage about science. It discusses the impact of AI on education.",
+    "source_type": "web"
+  }
+}
