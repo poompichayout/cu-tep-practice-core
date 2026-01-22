@@ -5,9 +5,10 @@
 
 # Go
 /collector/bin
+/collector/crawler
 /collector/dist
-*.exe
-*.test
+**/*.exe
+**/*.test
 *.out
 
 # Environment
