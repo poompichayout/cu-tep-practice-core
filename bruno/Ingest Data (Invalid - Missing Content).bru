@@ -1,0 +1,18 @@
+meta {
+  name: Ingest Data (Invalid - Missing Content)
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8080/internal/ingest
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "url": "https://example.com/invalid",
+    "source_type": "web"
+  }
+}

@@ -7,6 +7,7 @@ pub struct GeminiClient {
     client: Client,
     api_key: String,
     base_url: String,
+    mock_mode: bool,
 }
 
 #[derive(Serialize)]
@@ -57,6 +58,7 @@ impl GeminiClient {
             client: Client::new(),
             api_key: config.gemini_api_key.clone(),
             base_url: "https://generativelanguage.googleapis.com/v1beta/models".to_string(),
+            mock_mode: config.mock_gemini,
         }
     }
 
@@ -118,6 +120,21 @@ impl GeminiClient {
         &self,
         prompt: &str,
     ) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
+        if self.mock_mode {
+            println!("Mock Mode: Returning fake JSON response.");
+            return Ok(r#"{
+                "questions": [
+                    {
+                        "topic": "reading",
+                        "difficulty": "medium",
+                        "content": {"question": "Mock Question", "options": ["A", "B", "C", "D"]},
+                        "text_for_embedding": "Mock Question Text for Embedding"
+                    }
+                ]
+            }"#
+            .to_string());
+        }
+
         let url = format!(
             "{}/gemini-1.5-pro:generateContent?key={}",
             self.base_url, self.api_key
@@ -172,6 +189,11 @@ impl GeminiClient {
         &self,
         text: &str,
     ) -> Result<Vec<f32>, Box<dyn std::error::Error + Send + Sync>> {
+        if self.mock_mode {
+            println!("Mock Mode: Returning fake Embedding.");
+            return Ok(vec![0.1; 768]);
+        }
+
         let url = format!(
             "{}/text-embedding-004:embedContent?key={}",
             self.base_url, self.api_key
