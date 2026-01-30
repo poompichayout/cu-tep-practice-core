@@ -1,7 +1,7 @@
-use sqlx::PgPool;
-use uuid::Uuid;
 use crate::core::gemini_client::GeminiClient;
 use serde::{Deserialize, Serialize};
+use sqlx::PgPool;
+use uuid::Uuid;
 
 #[derive(Deserialize, Serialize, Debug)]
 struct ExtractedQuestion {
@@ -43,7 +43,8 @@ pub async fn process_material(
     };
 
     // Clean markdown code blocks if present (Gemini sometimes adds ```json ... ```)
-    let clean_json = json_response.trim()
+    let clean_json = json_response
+        .trim()
         .trim_start_matches("```json")
         .trim_start_matches("```")
         .trim_end_matches("```");
@@ -61,16 +62,30 @@ pub async fn process_material(
         .execute(&pool)
         .await?;
 
-        // Generate Embedding (Placeholder for now, assuming Gemini has an embedding endpoint or we skip it for this step if not implemented in client yet)
-        // For accurate RAG, we need an embedding model. Gemini has `models/embedding-001`.
-        // Let's assume we skip embedding network call for this exact second and just focus on logic, 
-        // OR we quickly add embedding call to GeminiClient. 
-        // I'll skip actual embedding call code to save token limit here, but structure it.
-        
-        let embedding_vector: Vec<f32> = vec![0.0; 768]; // Mock embedding
-        
-        // Insert Embedding is tricky with sqlx and pgvector without exact type mapping setup.
-        // pass.
+        // Generate Embedding
+        let embedding_values = match gemini.generate_embedding(&q.text_for_embedding).await {
+            Ok(v) => v,
+            Err(e) => {
+                eprintln!("Failed to generate embedding for question {}: {}", q_id, e);
+                // Continue to next question or returning error?
+                // For now, let's log and continue, or fill with zeros?
+                // Better to fail this question's embedding but keep the question?
+                // Let's return error to fail the batch for now for safety.
+                return Err(e);
+            }
+        };
+
+        let embedding = pgvector::Vector::from(embedding_values.clone());
+
+        // Insert Embedding
+        sqlx::query!(
+            "INSERT INTO embeddings (question_id, chunk_text, embedding) VALUES ($1, $2, $3)",
+            q_id,
+            q.text_for_embedding,
+            embedding as pgvector::Vector
+        )
+        .execute(&pool)
+        .await?;
     }
 
     // 3. Mark processed

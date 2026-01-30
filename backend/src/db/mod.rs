@@ -1,4 +1,4 @@
-use sqlx::postgres::{PgPoolOptions, PgPool};
+use sqlx::postgres::{PgPool, PgPoolOptions};
 use std::env;
 
 #[derive(Clone)]

@@ -1,5 +1,5 @@
-use serde_json::Value;
 use crate::core::traits::{ExamGenerationEngine, PersonalizationEngine, VectorAccessor};
+use serde_json::Value;
 
 // The Stable Manager
 pub struct EducationManager {
@@ -25,10 +25,16 @@ impl EducationManager {
     // The workflow logic (Stable)
     pub async fn generate_personalized_exam(&self, user_id: &str) -> Result<Value, String> {
         // 1. Identify what the user needs (Personalization Engine)
-        let weak_points = self.personalization_engine.determine_weak_points(user_id).await?;
-        
+        let weak_points = self
+            .personalization_engine
+            .determine_weak_points(user_id)
+            .await?;
+
         // 2. Decide on a topic (Logic in Manager, or delegate to Engine)
-        let topic = weak_points.first().unwrap_or(&"general".to_string()).clone();
+        let topic = weak_points
+            .first()
+            .unwrap_or(&"general".to_string())
+            .clone();
 
         // 3. (Optional) Find similar past questions (Vector Accessor)
         // let _examples = self.vector_accessor.find_similar_questions(&[], 3).await?;

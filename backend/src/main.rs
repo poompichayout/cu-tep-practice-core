@@ -1,10 +1,10 @@
+use crate::core::config::Config;
+use crate::db::init_db;
 use axum::{
     routing::{get, post},
     Router,
 };
 use std::net::SocketAddr;
-use crate::core::config::Config;
-use crate::db::init_db;
 
 mod api;
 mod core;
@@ -21,7 +21,7 @@ async fn main() {
     // 2. Init DB
     // We assume DATABASE_URL is set in .env or environment
     let pool = init_db().await;
-    
+
     // Auto-migrate
     sqlx::migrate!("./migrations")
         .run(&pool)

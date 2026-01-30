@@ -23,5 +23,9 @@ pub trait PersonalizationEngine: Send + Sync {
 // Stable/Accessor: Wrapper around Vector DB details
 #[async_trait]
 pub trait VectorAccessor: Send + Sync {
-    async fn find_similar_questions(&self, vector: &[f32], limit: i64) -> Result<Vec<Value>, String>;
+    async fn find_similar_questions(
+        &self,
+        vector: &[f32],
+        limit: i64,
+    ) -> Result<Vec<Value>, String>;
 }
